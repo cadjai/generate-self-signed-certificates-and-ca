@@ -1,0 +1,29 @@
+---
+ansible_name_module: 'generate-selfsigned-ca-and-certifcates'
+host_fqdn: 'ocp-service.myservicens.svc'
+root_dir: '/tmp'
+certs_dir: '{{ root_dir }}/certs'
+cert_csr_file: 'ocp-service.csr'
+cert_file: 'ocp-service.crt'
+cert_key_file: 'ocp-service.key'
+ca_cert_file: 'ocp-service-ca.crt'
+cert_country: "US"
+cert_state: "CO"
+cert_locality: "Denver"
+cert_org: "Red Hat"
+cert_org_unit: "OpenShift Container Platform"
+cert_cm: 'ocp-service.myservicens.svc'
+cert_san: 'DNS:ocp-service.myservicens.svc'
+cert_key_size: '4095'
+cert_key_type: 'RSA'
+ca_key_file: 'ocp-service-ca.key'
+ca_csr_file: 'ocp-service-ca.csr'
+openshift_cli: '/usr/bin/oc'
+ocp_cluster_token: ''
+ocp_cluster_console_url: ''
+ocp_cluster_console_port: ''
+staging_dir: '/tmp'
+ipa_password: ''
+ipa_admin: ''
+certs_dir: ''
+default_openshift_service_name: 'ocp-service'

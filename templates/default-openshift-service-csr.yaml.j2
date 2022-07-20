@@ -1,0 +1,13 @@
+apiVersion: certificates.k8s.io/v1
+kind: CertificateSigningRequest
+metadata:
+  name: {{ default_openshift_service_name }} 
+spec:
+  expirationSeconds: {{ cert_expiration_seconds | default('31557000', true) | int }}
+  signerName: kubernetes.io/kube-apiserver-client
+  groups:
+  - system:authenticated
+  request: {{ csr_data | b64encode }} 
+  usages:
+  - client auth
+

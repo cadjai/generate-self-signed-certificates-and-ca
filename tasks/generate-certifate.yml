@@ -1,0 +1,27 @@
+---
+- name: Generate Self signed CA certificate
+  openssl_certificate:
+    path: "{{ certs_dir }}/{{ ca_cert_file }}"
+    privatekey_path: "{{ certs_dir }}/{{ ca_key_file }}"
+    csr_path: "{{ certs_dir }}/{{ ca_csr_file }}"
+    provider: selfsigned
+    key_usage:
+      - critical 
+      - keyCertSign
+      - cRLSign
+    key_usage_strict: true
+  when:
+   - is_ca_cert is defined
+   - is_ca_cert | bool
+  register: selfsigned_ca_created
+  
+- name: Generate Self signed certificate
+  openssl_certificate:
+    path: "{{ certs_dir }}/{{ cert_file }}"
+    csr_path: "{{ certs_dir }}/{{ cert_csr_file }}"
+    ownca_path: "{{ certs_dir }}/{{ ca_cert_file }}"
+    ownca_privatekey_path: "{{ certs_dir }}/{{ ca_key_file }}"
+    provider: ownca
+  when:
+   - not is_ca_cert is defined or not is_ca_cert | bool
+  register: selfsigned_cert_created

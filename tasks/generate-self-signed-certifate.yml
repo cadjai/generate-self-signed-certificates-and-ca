@@ -1,0 +1,18 @@
+---
+- name: Import tasks to generate self signed ca
+  vars:
+  include_tasks: generate-self-signed-ca.yml
+
+- name: Import tasks to generate private key
+  vars:
+  include_tasks: generate-private-key.yml
+
+- name: Import tasks to generate CA CSR
+  vars:
+    is_ca_csr: false
+  include_tasks: generate-csr.yml
+
+- name: Import tasks to generate self signed certificate
+  vars:
+    is_ca_cert: false
+  include_tasks: generate-certifate.yml 

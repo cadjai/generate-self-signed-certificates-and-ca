@@ -1,0 +1,21 @@
+---
+- name: Import tasks to generate private key
+  vars:
+  include_tasks: generate-private-key.yml
+
+- name: Import tasks to generate CSR
+  vars:
+    is_ca_csr: false
+  include_tasks: generate-csr.yml
+
+### See if this can be refactored later
+- name: Generate Signed certificate from IPA
+  shell: "echo {{ipa_password}} | kinit {{ipa_admin}};/usr/bin/ipa cert-request {{certs_dir}}/{{cert_csr_file}} --add --principal HOST/{{host_fqdn}} --certificate-out={{certs_dir}}/{{cert_file}}"
+  no_log: true
+  register: certificate_generated
+
+- name: Pull CA Cert from IPA Server
+  get_url:
+    url: "http://{{ipa_server}}/ipa/config/ca.crt"
+    dest: "{{ certs_dir }}/{{ ca_cert_file }}"
+

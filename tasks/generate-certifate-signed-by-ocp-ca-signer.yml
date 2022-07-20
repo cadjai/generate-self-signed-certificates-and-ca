@@ -1,0 +1,82 @@
+---
+- name: Import tasks to generate private key
+  vars:
+  include_tasks: generate-private-key.yml
+
+- name: Import tasks to generate CSR
+  vars:
+    is_ca_csr: false
+  include_tasks: generate-csr.yml
+
+- name: '{{ ansible_name_module }} | command:cat | Load created CSR'
+  shell: cat "{{ certs_dir }}/{{ cert_csr_file }}" 
+  when:
+    - csr_created is defined
+    - csr_created.rc is defined
+    - csr_created.rc == 0
+  register: csr_loaded
+
+- name: '{{ ansible_name_module }} | template | Copy CSR Manifest template to staging location'
+  vars:
+    csr_data: "{{ csr_loaded.stdout }}"
+  template:
+    src: "templates/default-openshift-service-csr.yaml.j2"
+    dest: "{{ staging_dir | default('/tmp', true) }}/default-openshift-service-csr.yaml"
+    force: yes
+  when:
+    - csr_loaded is defined
+    - csr_loaded.rc is defined
+    - csr_loaded.rc == 0
+  register: csr_manifest_created
+
+- name: Authenticate with the API
+  command: >
+    {{ openshift_cli }} login \
+      --token {{ ocp_cluster_token }} \
+      --insecure-skip-tls-verify=true {{ ocp_cluster_console_url }}:{{ ocp_cluster_console_port | d('6443', true) }}
+  when:
+    - ocp_cluster_token is defined and ocp_cluster_token != ""
+  register: login_out
+
+- name: Authenticate with the API
+  command: >
+    {{ openshift_cli }} login \
+      -u {{ ocp_cluster_user }} \
+      -p {{ ocp_cluster_user_password }} \
+      --insecure-skip-tls-verify=true {{ ocp_cluster_console_url }}:{{ ocp_cluster_console_port | d('6443', true) }}
+  when:
+    - not ocp_cluster_token is defined or ocp_cluster_token == ""
+  register: login_out
+
+- name: '{{ ansible_name_module }} | command:{{ openshift_cli }} apply | deploy CSR manifest config '
+  command: >
+    {{ openshift_cli }} apply -f {{ staging_dir | default('/tmp', true) }}/default-openshift-service-csr.yaml 
+  when:
+    - csr_manifest_created is defined
+  register: csr_manifest_deployed
+
+- name: '{{ ansible_name_module }} | command:{{ openshift_cli }} get | deployed CSR config '
+  command: >
+    {{ openshift_cli }} get csr {{ default_openshift_service_name }} 
+  ignore_errors: yes
+  when:
+    - csr_manifest_deployed is defined
+    - csr_manifest_deployed.rc is defined
+    - csr_manifest_deployed.rc == 0
+  register: csr_manifest
+
+- name: '{{ ansible_name_module }} | command:{{ openshift_cli }} adm:approve | approved deployed CSR '
+  command: >
+    {{ openshift_cli }} adm certificate approve {{ default_openshift_service_name }} 
+  when:
+    - csr_manifest is defined
+    - csr_manifest.rc is defined
+    - csr_manifest.rc == 0
+  register: csr_approved
+
+- name: '{{ ansible_name_module }} | command:{{ openshift_cli }} get | retrieve signed certificate '
+  shell: >
+    {{ openshift_cli }} get csr {{ default_openshift_service_name }} -o jsonpath='{.status.certificate}' \
+    | base64 -d >  {{ certs_dir }}/{{ cert_file }} 
+  register: certificate_created 
+

@@ -1,0 +1,34 @@
+---
+- name: Generate The CSR for the certificate
+  openssl_csr:
+    path: "{{ certs_dir }}/{{ cert_csr_file }}"
+    privatekey_path: "{{ certs_dir }}/{{ cert_key_file }}"
+    country_name: "{{ cert_country | default('US', true) }}"
+    locality_name: "{{ cert_locality | default('Denver', true) }}"
+    state_or_province_name: "{{ cert_state | default('CO', true) }}"
+    organization_name: "{{ cert_org | default('Red Hat', true) }}"
+    organizational_unit_name: "{{ cert_org_unit | default('OpenShift Container Platform', true) }}"
+    common_name: "{{ cert_cm }}"
+    subject_alt_name: "{{ cert_san | default(omit, true) }}"
+  when:
+    - not is_ca_csr is defined or not is_ca_csr | bool 
+  register: csr_created
+
+- name: Generate The CSR for the CA certificate
+  openssl_csr:
+    path: "{{ certs_dir }}/{{ cert_csr_file }}"
+    privatekey_path: "{{ certs_dir }}/{{ cert_key_file }}"
+    country_name: "{{ cert_country | default('US', true) }}"
+    locality_name: "{{ cert_locality | default('Denver', true) }}"
+    state_or_province_name: "{{ cert_state | default('CO', true) }}"
+    organization_name: "{{ cert_org | default('Red Hat', true) }}"
+    organizational_unit_name: "{{ cert_org_unit | default('OpenShift Container Platform', true) }}"
+    common_name: "{{ cert_cm }}"
+    subject_alt_name: "{{ cert_san | default(omit, true) }}"
+    basic_constraints:
+      - CA:TRUE
+  when:
+    - is_ca_csr is defined 
+    - is_ca_csr | bool 
+  register: ca_csr_created
+
