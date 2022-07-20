@@ -45,6 +45,7 @@ Dependencies
 Example Playbook
 ----------------
 To generate a self signed certificate, use this sample playbook  
+```
     - hosts: localhost
       become: yes
       vars_files:
@@ -55,8 +56,10 @@ To generate a self signed certificate, use this sample playbook
       import_role:
         name: generate-selfsigned-ca-and-certifcates
         tasks_from: generate-self-signed-certifate.yml
+```
 
 To generate a certificate signed by FreeIPA, use this sample playbook  
+```
     - hosts: localhost
       become: yes
       vars_files:
@@ -67,8 +70,10 @@ To generate a certificate signed by FreeIPA, use this sample playbook
       import_role:
         name: generate-selfsigned-ca-and-certifcates
         tasks_from: generate-certifate-signed-by-free-ipa.yml
+```
 
 To generate a certificate signed by the OpenShift Container Platform signer, use this sample playbook  
+```
     - hosts: localhost
       become: yes
       vars_files:
@@ -79,8 +84,10 @@ To generate a certificate signed by the OpenShift Container Platform signer, use
       import_role:
         name: generate-selfsigned-ca-and-certifcates
         tasks_from: generate-certifate-signed-by-ocp-ca-signer.yml
+```
 
 To generate just a private key, use this sample playbook  
+```
     - hosts: localhost
       become: yes
       vars_files:
@@ -91,8 +98,10 @@ To generate just a private key, use this sample playbook
       import_role:
         name: generate-selfsigned-ca-and-certifcates
         tasks_from: generate-private-key.yml
+```
 
 To generate just a CSR, use this sample playbook  
+```
     - hosts: localhost
       become: yes
       vars_files:
@@ -103,8 +112,10 @@ To generate just a CSR, use this sample playbook
       import_role:
         name: generate-selfsigned-ca-and-certifcates
         tasks_from: generate-csr.yml
+```
 
 To generate just a self signer CA, use this sample playbook  
+```
     - hosts: localhost
       become: yes
       vars_files:
@@ -115,7 +126,7 @@ To generate just a self signer CA, use this sample playbook
       import_role:
         name: generate-selfsigned-ca-and-certifcates
         tasks_from: generate-self-signed-ca.yml
-
+```
 
 License
 -------
