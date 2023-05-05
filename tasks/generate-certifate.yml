@@ -5,11 +5,6 @@
     privatekey_path: "{{ certs_dir }}/{{ ca_key_file }}"
     csr_path: "{{ certs_dir }}/{{ ca_csr_file }}"
     provider: selfsigned
-    key_usage:
-      - critical 
-      - keyCertSign
-      - cRLSign
-    key_usage_strict: true
   when:
    - is_ca_cert is defined
    - is_ca_cert | bool
