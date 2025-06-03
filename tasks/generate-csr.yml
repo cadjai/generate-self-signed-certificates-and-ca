@@ -1,6 +1,6 @@
 ---
 - name: Generate The CSR for the certificate
-  openssl_csr:
+  community.crypto.openssl_csr:
     path: "{{ certs_dir }}/{{ cert_csr_file }}"
     privatekey_path: "{{ certs_dir }}/{{ cert_key_file }}"
     country_name: "{{ cert_country | default('US', true) }}"
@@ -15,7 +15,7 @@
   register: csr_created
 
 - name: Generate The CSR for the CA certificate
-  openssl_csr:
+  community.crypto.openssl_csr:
     path: "{{ certs_dir }}/{{ cert_csr_file }}"
     privatekey_path: "{{ certs_dir }}/{{ cert_key_file }}"
     country_name: "{{ cert_country | default('US', true) }}"
