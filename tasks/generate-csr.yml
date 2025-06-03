@@ -9,7 +9,12 @@
     organization_name: "{{ cert_org | default('Red Hat', true) }}"
     organizational_unit_name: "{{ cert_org_unit | default('OpenShift Container Platform', true) }}"
     common_name: "{{ cert_cm }}"
-    subject_alt_name: "{{ cert_san | default(omit, true) }}"
+    key_usage:
+      - digitalSignature
+      - keyEncipherment
+      - keyCertSign
+    key_usage_critical: true
+    subject_alt_name: "{{ cert_san }}"
   when:
     - not is_ca_csr is defined or not is_ca_csr | bool 
   register: csr_created
@@ -23,8 +28,12 @@
     state_or_province_name: "{{ cert_state | default('CO', true) }}"
     organization_name: "{{ cert_org | default('Red Hat', true) }}"
     organizational_unit_name: "{{ cert_org_unit | default('OpenShift Container Platform', true) }}"
-    common_name: "{{ cert_cm }}"
-    subject_alt_name: "{{ cert_san | default(omit, true) }}"
+    common_name: "{{ cert_cm_ca }}"
+    key_usage:
+      - digitalSignature
+      - cRLSign
+      - keyCertSign
+    subject_alt_name: "{{ ca_san }}"
     basic_constraints:
       - CA:TRUE
   when:
