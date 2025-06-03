@@ -2,6 +2,4 @@
 - name: Generate Private Key
   community.crypto.openssl_privatekey:
     path: "{{ certs_dir }}/{{ cert_key_file }}"
-    size: "{{ cert_key_size | default('4096', true) }}"
-    type: "{{ cert_key_type | default('RSA', true) }}"
 
